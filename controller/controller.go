@@ -1,4 +1,4 @@
-package main
+package controller
 
 import (
 	"flag"
@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
+	"github.com/sotoz/Ferrytale/entities"
 )
 
 type ErrResponse struct {
@@ -28,13 +29,13 @@ func paginate(next http.Handler) http.Handler {
 }
 
 func listDocks(w http.ResponseWriter, r *http.Request) {
-	if err := render.RenderList(w, r, NewDocksListResponse(docks)); err != nil {
+	if err := render.RenderList(w, r, NewDocksListResponse(entities.Docks)); err != nil {
 		render.Render(w, r, ErrRender(err))
 		return
 	}
 }
 func listFerries(w http.ResponseWriter, r *http.Request) {
-	if err := render.RenderList(w, r, NewFerriesListResponse(ferries)); err != nil {
+	if err := render.RenderList(w, r, NewFerriesListResponse(entities.Ferries)); err != nil {
 		render.Render(w, r, ErrRender(err))
 		return
 	}

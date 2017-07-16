@@ -1,19 +1,20 @@
-package main
+package controller
 
 import (
 	"net/http"
 
 	"github.com/go-chi/render"
+	"github.com/sotoz/Ferrytale/entities"
 )
 
 var ErrNotFound = &ErrResponse{HTTPStatusCode: 404, StatusText: "Resource not found."}
 
 type DockListResponse []*DockResponse
 type DockResponse struct {
-	*Dock
+	*entities.Dock
 }
 
-func NewDocksListResponse(docks []*Dock) []render.Renderer {
+func NewDocksListResponse(docks []*entities.Dock) []render.Renderer {
 	list := []render.Renderer{}
 	for _, dock := range docks {
 		list = append(list, NewDockResponse(dock))
@@ -21,7 +22,7 @@ func NewDocksListResponse(docks []*Dock) []render.Renderer {
 	return list
 }
 
-func NewDockResponse(dock *Dock) *DockResponse {
+func NewDockResponse(dock *entities.Dock) *DockResponse {
 	resp := &DockResponse{Dock: dock}
 
 	return resp
@@ -34,10 +35,10 @@ func (rd *DockResponse) Render(w http.ResponseWriter, r *http.Request) error {
 
 type FerryListResponse []*FerryResponse
 type FerryResponse struct {
-	*Ferry
+	*entities.Ferry
 }
 
-func NewFerriesListResponse(ferries []*Ferry) []render.Renderer {
+func NewFerriesListResponse(ferries []*entities.Ferry) []render.Renderer {
 	list := []render.Renderer{}
 	for _, ferry := range ferries {
 		list = append(list, NewFerryResponse(ferry))
@@ -45,7 +46,7 @@ func NewFerriesListResponse(ferries []*Ferry) []render.Renderer {
 	return list
 }
 
-func NewFerryResponse(ferry *Ferry) *FerryResponse {
+func NewFerryResponse(ferry *entities.Ferry) *FerryResponse {
 	resp := &FerryResponse{Ferry: ferry}
 
 	return resp
