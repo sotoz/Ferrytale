@@ -1,11 +1,11 @@
 package entities
 
 type Ferry struct {
-	ID   string
-	name string
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
 var Ferries = []*Ferry{
-	{ID: "1", name: "Westerdoksdijk"},
-	{ID: "2", name: "Amsterdam Central"},
+	{ID: "1", Name: "Westerdoksdijk"},
+	{ID: "2", Name: "Amsterdam Central"},
 }
