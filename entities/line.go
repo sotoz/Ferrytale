@@ -1,7 +1,10 @@
 package entities
 
 import (
+	"time"
+
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/sotoz/Ferrytale/database"
 )
 
 // Line describes a line entity
@@ -11,10 +14,14 @@ type Line struct {
 	FerryID     string   `json:"ferry_id"`
 	ADockID     string   `json:"a_dock_id"`
 	BDockID     string   `json:"b_dock_id"`
+	From        string   `json:"from"`
+	To          string   `json:"to"`
 	Schedule    Schedule `json:"schedule"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
-func getLines(page int, limit int) ([]*Dock, error) {
+func GetLines(page int, limit int) ([]*Line, error) {
 
 	var off int
 	if page < 2 {
@@ -23,31 +30,33 @@ func getLines(page int, limit int) ([]*Dock, error) {
 		off = (page - 1) * limit
 	}
 
-	docks := make([]*Dock, 0)
+	lines := make([]*Line, 0)
 
-	rows, err := db.Query("SELECT `id`, `name`, `longitude`, `latitude` FROM `docks` ORDER BY `name` DESC LIMIT ?, ?", off, limit)
+	rows, err := database.DBCon.Query("SELECT `id`, `description`, `ferry_id`, `a_dock_id`, `b_dock_id`, `created_at`, `updated_at` FROM `lines` ORDER BY `created_at` DESC LIMIT ?, ?", off, limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var dock Dock
+		var line Line
 		err := rows.Scan(
-			&dock.ID,
-			&dock.Name,
-			&dock.Longitude,
-			&dock.Latitude,
+			&line.ID,
+			&line.Description,
+			&line.FerryID,
+			&line.ADockID,
+			&line.BDockID,
+			&line.CreatedAt,
+			&line.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err
 		}
-		docks = append(docks, &dock)
+		lines = append(lines, &line)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return docks, nil
-
+	return lines, nil
 }

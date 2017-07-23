@@ -1,9 +1,13 @@
 package controller
 
 import (
+	"context"
 	"flag"
 	"net/http"
+	"strconv"
 	"time"
+
+	"log"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -20,11 +24,36 @@ type ErrResponse struct {
 	ErrorText  string `json:"error,omitempty"` // application-level error message, for debugging
 }
 
+var pageCtxKey string
+
+type pageOpts struct {
+	Page  int
+	Limit int
+}
+
 func paginate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// just a stub.. some ideas are to look at URL query params for something like
-		// the page number, or the limit, and send a query cursor down the chain
-		next.ServeHTTP(w, r)
+		var page, limit int
+		pageParam := r.URL.Query().Get("page")
+		limitParam := r.URL.Query().Get("limit")
+
+		page, err := strconv.Atoi(pageParam)
+		if err != nil || page == 0 {
+			render.Status(r, http.StatusBadRequest)
+			return
+		}
+
+		limit, err = strconv.Atoi(limitParam)
+		if err != nil || page == 0 {
+			render.Status(r, http.StatusBadRequest)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), pageCtxKey, &pageOpts{
+			Page:  page,
+			Limit: limit,
+		})
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
@@ -40,7 +69,30 @@ func listFerries(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+func ListLines(w http.ResponseWriter, r *http.Request) {
+	pgOpts := r.Context().Value(pageCtxKey).(*pageOpts)
+	log.Print("asdfasdfaffafafa1111")
 
+	lines, err := entities.GetLines(pgOpts.Page, pgOpts.Limit)
+	if err != nil {
+		log.Print(err)
+
+		log.Fatalf("error: %s", err)
+	}
+	log.Print("asdfasdf1111")
+
+	if err != nil {
+		render.Render(w, r, ErrRender(err))
+		return
+	}
+	log.Print("asdfasdf")
+
+	render.Status(r, http.StatusOK)
+	render.JSON(w, r, LineAPIResponse{
+		Data: lines,
+	},
+	)
+}
 func Router() http.Handler {
 	flag.Parse()
 
@@ -67,7 +119,9 @@ func Router() http.Handler {
 	r.Route("/ferries", func(r chi.Router) {
 		r.With(paginate).Get("/", listFerries)
 	})
-
+	r.Route("/lines", func(r chi.Router) {
+		r.With(paginate).Get("/", ListLines)
+	})
 	return r
 
 }

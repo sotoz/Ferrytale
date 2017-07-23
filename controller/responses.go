@@ -57,6 +57,29 @@ func (rd *FerryResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
+type LineListResponse []*LineResponse
+type LineResponse struct {
+	*entities.Line
+}
+
+func NewLinesListResponse(lines []*entities.Line) []render.Renderer {
+	list := []render.Renderer{}
+	for _, line := range lines {
+		list = append(list, NewLineResponse(line))
+	}
+	return list
+}
+
+func NewLineResponse(line *entities.Line) *LineResponse {
+	resp := &LineResponse{Line: line}
+
+	return resp
+}
+
+func (rd *LineResponse) Render(w http.ResponseWriter, r *http.Request) error {
+	return nil
+}
+
 func ErrInvalidRequest(err error) render.Renderer {
 	return &ErrResponse{
 		Err:            err,
@@ -77,4 +100,8 @@ func ErrRender(err error) render.Renderer {
 		StatusText:     "Error rendering response.",
 		ErrorText:      err.Error(),
 	}
+}
+
+type LineAPIResponse struct {
+	Data []*entities.Line
 }
