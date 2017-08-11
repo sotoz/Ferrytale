@@ -4,10 +4,11 @@ import (
 	"context"
 	"flag"
 	"net/http"
-	"strconv"
 	"time"
 
 	"log"
+
+	"strconv"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -34,21 +35,26 @@ type pageOpts struct {
 func paginate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var page, limit int
+		var err error
 		pageParam := r.URL.Query().Get("page")
 		limitParam := r.URL.Query().Get("limit")
-
-		page, err := strconv.Atoi(pageParam)
-		if err != nil || page == 0 {
-			render.Status(r, http.StatusBadRequest)
-			return
+		if pageParam == "" {
+			page = 1
+		} else {
+			page, err = strconv.Atoi(pageParam)
+			if err != nil {
+				render.Status(r, http.StatusBadRequest)
+				log.Print(err)
+			}
 		}
-
-		limit, err = strconv.Atoi(limitParam)
-		if err != nil || page == 0 {
-			render.Status(r, http.StatusBadRequest)
-			return
+		if limitParam == "" {
+			limit = 1
+		} else {
+			limit, err = strconv.Atoi(limitParam)
+			if err != nil {
+				render.Status(r, http.StatusBadRequest)
+			}
 		}
-
 		ctx := context.WithValue(r.Context(), pageCtxKey, &pageOpts{
 			Page:  page,
 			Limit: limit,
@@ -75,23 +81,12 @@ func ListLines(w http.ResponseWriter, r *http.Request) {
 
 	lines, err := entities.GetLines(pgOpts.Page, pgOpts.Limit)
 	if err != nil {
-		log.Print(err)
-
 		log.Fatalf("error: %s", err)
 	}
-	log.Print("asdfasdf1111")
-
-	if err != nil {
+	if err := render.RenderList(w, r, NewLinesListResponse(lines)); err != nil {
 		render.Render(w, r, ErrRender(err))
 		return
 	}
-	log.Print("asdfasdf")
-
-	render.Status(r, http.StatusOK)
-	render.JSON(w, r, LineAPIResponse{
-		Data: lines,
-	},
-	)
 }
 func Router() http.Handler {
 	flag.Parse()

@@ -22,7 +22,6 @@ type Line struct {
 }
 
 func GetLines(page int, limit int) ([]*Line, error) {
-
 	var off int
 	if page < 2 {
 		off = 0
