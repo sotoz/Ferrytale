@@ -29,7 +29,7 @@ func NewDockResponse(dock *entities.Dock) *DockResponse {
 }
 
 func (rd *DockResponse) Render(w http.ResponseWriter, r *http.Request) error {
-	// Pre-processing before a response is marshalled and sent across the wire
+	// Pre-processing before a response is marshaled and sent across the wire
 	return nil
 }
 

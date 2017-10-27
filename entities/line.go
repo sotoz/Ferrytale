@@ -12,10 +12,8 @@ type Line struct {
 	ID          string   `json:"id"`
 	Description string   `json:"description"`
 	FerryID     string   `json:"ferry_id"`
-	ADockID     string   `json:"a_dock_id"`
-	BDockID     string   `json:"b_dock_id"`
-	From        string   `json:"from"`
-	To          string   `json:"to"`
+	From        string   `json:"from_dock"`
+	To          string   `json:"to_dock"`
 	Schedule    Schedule `json:"schedule"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -31,7 +29,7 @@ func GetLines(page int, limit int) ([]*Line, error) {
 
 	lines := make([]*Line, 0)
 
-	rows, err := database.DBCon.Query("SELECT `id`, `description`, `ferry_id`, `a_dock_id`, `b_dock_id`, `created_at`, `updated_at` FROM `lines` ORDER BY `created_at` DESC LIMIT ?, ?", off, limit)
+	rows, err := database.DBCon.Query("SELECT `id`, `description`, `ferry_id`, `created_at`, `updated_at` FROM `lines` ORDER BY `created_at` DESC LIMIT ?, ?", off, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -42,8 +40,6 @@ func GetLines(page int, limit int) ([]*Line, error) {
 			&line.ID,
 			&line.Description,
 			&line.FerryID,
-			&line.ADockID,
-			&line.BDockID,
 			&line.CreatedAt,
 			&line.UpdatedAt,
 		)
