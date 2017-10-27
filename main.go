@@ -9,10 +9,13 @@ import (
 
 	"github.com/sotoz/Ferrytale/controller"
 	"github.com/sotoz/Ferrytale/database"
+	"strconv"
+	"os"
 )
 
 type Config struct {
 	Host string
+	Port int
 }
 
 func main() {
@@ -24,7 +27,7 @@ func main() {
 			"root",
 			"root",
 			"",
-			"127.0.0.1:33062",
+			"127.0.0.1:3306",
 			"ferrytale",
 		),
 	)
@@ -33,14 +36,30 @@ func main() {
 	}
 	defer db.Close()
 
-	database.DBCon = db
-	c := Config{
-		Host: "127.0.0.1:3333",
+	p, err:= strconv.Atoi(os.Getenv("PORT"))
+	if err != nil {
+		log.Fatalf("Cannot Parse Environmental variable for port : %s", err)
 	}
+	c := Config{
+		Host: "127.0.0.1",
+		Port: p,
+	}
+
+	database.DBCon = db
 	err = db.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Print("Ferrytale started...")
-	http.ListenAndServe(c.Host, controller.Router())
+
+	port := strconv.Itoa(c.Port)
+	if port == ""{
+		log.Fatalf("No Correct Port was given : %s", port)
+	}
+
+	url := fmt.Sprintf("%s:%s", c.Host, port)
+	if url == ""{
+		log.Fatalf("No correct url was given: %s", url)
+	}
+	http.ListenAndServe(url, controller.Router())
 }
