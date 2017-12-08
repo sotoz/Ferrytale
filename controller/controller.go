@@ -68,13 +68,15 @@ func listDocks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
 func listFerries(w http.ResponseWriter, r *http.Request) {
 	if err := render.RenderList(w, r, NewFerriesListResponse(entities.Ferries)); err != nil {
 		render.Render(w, r, ErrRender(err))
 		return
 	}
 }
-func ListLines(w http.ResponseWriter, r *http.Request) {
+
+func listLines(w http.ResponseWriter, r *http.Request) {
 	pgOpts := r.Context().Value(pageCtxKey).(*pageOpts)
 	log.Print("Fetching Lines")
 
@@ -87,9 +89,10 @@ func ListLines(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// Router is the default controller that has the routes for the application.
 func Router() http.Handler {
 	r := chi.NewRouter()
-	log.Print("asdfasdfaffafafa3333")
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -113,8 +116,8 @@ func Router() http.Handler {
 		r.With(paginate).Get("/", listFerries)
 	})
 	r.Route("/lines", func(r chi.Router) {
-		r.With(paginate).Get("/", ListLines)
+		r.With(paginate).Get("/", listLines)
 	})
-	return r
 
+	return r
 }
