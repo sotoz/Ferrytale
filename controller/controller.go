@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"flag"
 	"net/http"
 	"time"
 
@@ -77,11 +76,11 @@ func listFerries(w http.ResponseWriter, r *http.Request) {
 }
 func ListLines(w http.ResponseWriter, r *http.Request) {
 	pgOpts := r.Context().Value(pageCtxKey).(*pageOpts)
-	log.Print("asdfasdfaffafafa1111")
+	log.Print("Fetching Lines")
 
 	lines, err := entities.GetLines(pgOpts.Page, pgOpts.Limit)
 	if err != nil {
-		log.Fatalf("error: %s", err)
+		log.Printf("error: %s", err)
 	}
 	if err := render.RenderList(w, r, NewLinesListResponse(lines)); err != nil {
 		render.Render(w, r, ErrRender(err))
@@ -89,9 +88,8 @@ func ListLines(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func Router() http.Handler {
-	flag.Parse()
-
 	r := chi.NewRouter()
+	log.Print("asdfasdfaffafafa3333")
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)

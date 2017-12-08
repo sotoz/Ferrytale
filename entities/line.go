@@ -3,7 +3,6 @@ package entities
 import (
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/sotoz/Ferrytale/database"
 )
 
@@ -16,7 +15,7 @@ type Line struct {
 	To          string   `json:"to_dock"`
 	Schedule    Schedule `json:"schedule"`
 	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	UpdatedAt   *time.Time
 }
 
 func GetLines(page int, limit int) ([]*Line, error) {
