@@ -11,12 +11,6 @@ import (
 	"github.com/sotoz/Ferrytale/database"
 )
 
-// Config describes the configuration struct for the application.
-type Config struct {
-	Host string
-	Port string
-}
-
 func main() {
 
 	db, err := sql.Open("mysql", fmt.Sprintf("%s", os.Getenv("DATABASE_URL")))
@@ -30,12 +24,8 @@ func main() {
 	}
 	defer db.Close()
 
-	c := Config{
-		Host: os.Getenv("APPLICATION_HOST"),
-		Port: os.Getenv("APPLICATION_PORT"),
-	}
-
 	log.Print("Ferrytale started...")
 
-	log.Fatal(http.ListenAndServe(c.Host+":"+c.Port, controller.Router()))
+	port := ":" + os.Getenv("PORT")
+	log.Fatal(http.ListenAndServe(port, controller.Router()))
 }
