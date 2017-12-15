@@ -37,5 +37,5 @@ func main() {
 
 	log.Print("Ferrytale started...")
 
-	http.ListenAndServe(c.Host+":"+c.Port, controller.Router())
+	log.Fatal(http.ListenAndServe(c.Host+":"+c.Port, controller.Router()))
 }
