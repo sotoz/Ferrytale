@@ -70,7 +70,15 @@ func listDocks(w http.ResponseWriter, r *http.Request) {
 }
 
 func listFerries(w http.ResponseWriter, r *http.Request) {
-	if err := render.RenderList(w, r, NewFerriesListResponse(entities.Ferries)); err != nil {
+	pgOpts := r.Context().Value(pageCtxKey).(*pageOpts)
+	log.Print("Fetching Ferries")
+
+	ferries, err := entities.GetFerries(pgOpts.Page, pgOpts.Limit)
+	if err != nil {
+		log.Printf("error: %s", err)
+	}
+
+	if err := render.RenderList(w, r, NewFerriesListResponse(ferries)); err != nil {
 		render.Render(w, r, ErrRender(err))
 		return
 	}
