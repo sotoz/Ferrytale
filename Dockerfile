@@ -5,10 +5,7 @@ COPY . .
 
 ENV APPLICATION_HOST 127.0.0.1 
 ENV APPLICATION_PORT 33333 
-ENV DATABASE_HOST localhost 
-ENV DATABASE_PORT 33306 
-ENV DATABASE_USER root 
-ENV DATABASE_PASSWORD root
+ENV DATABASE_URL root:root@tcp(localhost:33306)/ferrytale 
 
 RUN go-wrapper download
 RUN go-wrapper install
