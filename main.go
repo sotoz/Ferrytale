@@ -19,16 +19,7 @@ type Config struct {
 
 func main() {
 
-	db, err := sql.Open(
-		"mysql",
-		fmt.Sprintf(
-			"%s:%s@tcp(%s)/%s?parseTime=true&time_zone=UTC",
-			os.Getenv("DATABASE_USER"),
-			os.Getenv("DATABASE_PASSWORD"),
-			os.Getenv("DATABASE_HOST")+":"+os.Getenv("DATABASE_PORT"),
-			"ferrytale",
-		),
-	)
+	db, err := sql.Open("mysql", fmt.Sprintf("%s", os.Getenv("DATABASE_URL")))
 	if err != nil {
 		log.Fatalf("Could not open database: %s", err)
 	}
