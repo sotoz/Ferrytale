@@ -2,12 +2,10 @@ package controller
 
 import (
 	"context"
-	"net/http"
-	"time"
-
 	"log"
-
+	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -15,6 +13,7 @@ import (
 	"github.com/sotoz/ferrytale/entities"
 )
 
+// ErrResponse defines a struct for the error responses.
 type ErrResponse struct {
 	Err            error `json:"-"` // low-level runtime error
 	HTTPStatusCode int   `json:"-"` // http response status code
@@ -98,6 +97,20 @@ func listLines(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func listRoutes(w http.ResponseWriter, r *http.Request) {
+	log.Print("Fetching Routes")
+
+	line := r.Context().Value("line").(*entities.Line)
+	routes, err := entities.GetRoutes(line.ID)
+	if err != nil {
+		log.Printf("error: %s", err)
+	}
+	if err := render.RenderList(w, r, NewRoutesListResponse(routes)); err != nil {
+		render.Render(w, r, ErrRender(err))
+		return
+	}
+}
+
 // Router is the default controller that has the routes for the application.
 func Router() http.Handler {
 	r := chi.NewRouter()
@@ -115,17 +128,38 @@ func Router() http.Handler {
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Welcome to Amsterdam's Ferries webservice."))
 	})
-
 	r.Route("/docks", func(r chi.Router) {
 		r.With(paginate).Get("/", listDocks)
 	})
-
 	r.Route("/ferries", func(r chi.Router) {
 		r.With(paginate).Get("/", listFerries)
 	})
 	r.Route("/lines", func(r chi.Router) {
 		r.With(paginate).Get("/", listLines)
+		r.Route("/{lineID}", func(r chi.Router) {
+			r.Use(LineCtx)
+			r.Get("/", listRoutes)
+		})
 	})
 
 	return r
+}
+
+// LineCtx
+func LineCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		lineID := chi.URLParam(r, "lineID")
+		if lineID == "" {
+			http.Error(w, http.StatusText(400), 400)
+			return
+		}
+
+		line, err := entities.GetLine(lineID)
+		if err != nil {
+			http.Error(w, http.StatusText(404), 404)
+			return
+		}
+		ctx := context.WithValue(r.Context(), "line", line)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }

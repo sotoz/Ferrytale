@@ -9,8 +9,8 @@ type Route struct {
 	Arrival   string `json:"arrival_at"`
 }
 
-// GetSchedule will return an array of Routes.
-func GetSchedule(lineID string) ([]*Route, error) {
+// GetRoutes will return an array of Routes.
+func GetRoutes(lineID string) ([]*Route, error) {
 	routes := make([]*Route, 0)
 
 	rows, err := database.DBCon.Query("SELECT `id`, `line_id`, `day`, `departure_at`, `arrival_at` FROM `schedules` WHERE `schedules`.`line_id`= ?", lineID)

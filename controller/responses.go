@@ -9,6 +9,30 @@ import (
 
 var ErrNotFound = &ErrResponse{HTTPStatusCode: 404, StatusText: "Resource not found."}
 
+type RouteListResponse []*RouteResponse
+type RouteResponse struct {
+	*entities.Route
+}
+
+func NewRoutesListResponse(routes []*entities.Route) []render.Renderer {
+	list := []render.Renderer{}
+	for _, route := range routes {
+		list = append(list, NewRouteResponse(route))
+	}
+	return list
+}
+
+func NewRouteResponse(route *entities.Route) *RouteResponse {
+	resp := &RouteResponse{Route: route}
+
+	return resp
+}
+
+func (rd *RouteResponse) Render(w http.ResponseWriter, r *http.Request) error {
+	// Pre-processing before a response is marshaled and sent across the wire
+	return nil
+}
+
 type DockListResponse []*DockResponse
 type DockResponse struct {
 	*entities.Dock

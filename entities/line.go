@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/sotoz/ferrytale/database"
@@ -54,4 +55,29 @@ func GetLines(page int, limit int) ([]*Line, error) {
 	}
 
 	return lines, nil
+}
+
+// GetLine returns the whole line record from the database.
+func GetLine(lineID string) (*Line, error) {
+	var line Line
+
+	row, err := database.DBCon.Query("SELECT `lines`.`id`, `lines`.`description`, (SELECT `docks`.`name` FROM `docks` WHERE `docks`.`id`=`lines`.`a_dock_id`) AS docka,(SELECT `docks`.`name` FROM `docks` WHERE `docks`.`id`=`lines`.`b_dock_id`) AS dockb, (SELECT `ferries`.`name` FROM `ferries` WHERE `ferries`.`id`=`lines`.`ferry_id`) AS ferry FROM `lines` WHERE `lines`.`id`=? LIMIT 1", lineID)
+	if err != nil {
+		return nil, err
+	}
+
+	if err == sql.ErrNoRows {
+		return &line, nil
+	}
+
+	defer row.Close()
+	err = row.Scan(
+		&line.ID,
+		&line.Description,
+		&line.From,
+		&line.To,
+		&line.Ferry,
+	)
+
+	return &line, nil
 }
