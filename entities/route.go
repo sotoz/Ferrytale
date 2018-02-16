@@ -13,7 +13,7 @@ type Route struct {
 func GetRoutes(lineID string) ([]*Route, error) {
 	routes := make([]*Route, 0)
 
-	rows, err := database.DBCon.Query("SELECT `id`, `line_id`, `day`, `departure_at`, `arrival_at` FROM `schedules` WHERE `schedules`.`line_id`= ?", lineID)
+	rows, err := database.DBCon.Query("SELECT `day`, `departure_at`, `arrival_at` FROM `schedules` WHERE `schedules`.`line_id`= ?", lineID)
 	if err != nil {
 		return nil, err
 	}
