@@ -1,6 +1,6 @@
 package entities
 
-import "github.com/sotoz/Ferrytale/database"
+import "github.com/sotoz/ferrytale/database"
 
 // Ferry describes the ferry entity.
 type Ferry struct {

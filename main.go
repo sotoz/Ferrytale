@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/sotoz/Ferrytale/controller"
-	"github.com/sotoz/Ferrytale/database"
+	"github.com/sotoz/ferrytale/controller"
+	"github.com/sotoz/ferrytale/database"
 )
 
 func main() {

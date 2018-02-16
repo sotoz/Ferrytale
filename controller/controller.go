@@ -12,7 +12,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
-	"github.com/sotoz/Ferrytale/entities"
+	"github.com/sotoz/ferrytale/entities"
 )
 
 type ErrResponse struct {

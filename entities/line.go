@@ -3,7 +3,7 @@ package entities
 import (
 	"time"
 
-	"github.com/sotoz/Ferrytale/database"
+	"github.com/sotoz/ferrytale/database"
 )
 
 // Line describes a line entity
@@ -13,7 +13,7 @@ type Line struct {
 	Ferry       string     `json:"ferry"`
 	From        string     `json:"from_dock"`
 	To          string     `json:"to_dock"`
-	Schedule    Schedule   `json:"-"`
+	Routes      []Route    `json:"-"`
 	CreatedAt   time.Time  `json:"-"`
 	UpdatedAt   *time.Time `json:"-"`
 }

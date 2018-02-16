@@ -2,7 +2,7 @@ package entities
 
 import (
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/sotoz/Ferrytale/database"
+	"github.com/sotoz/ferrytale/database"
 )
 
 // Dock describes a dock entity
