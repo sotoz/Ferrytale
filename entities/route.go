@@ -1,6 +1,7 @@
 package entities
 
 import "github.com/sotoz/ferrytale/database"
+import "log"
 
 // Route defines a Route struct with Day,Departure and Arrival time.
 type Route struct {
@@ -34,6 +35,6 @@ func GetRoutes(lineID string) ([]*Route, error) {
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-
+	log.Printf("%q", routes)
 	return routes, nil
 }

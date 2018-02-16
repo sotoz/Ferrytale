@@ -101,6 +101,7 @@ func listRoutes(w http.ResponseWriter, r *http.Request) {
 	log.Print("Fetching Routes")
 
 	line := r.Context().Value("line").(*entities.Line)
+	log.Printf("111: Line %q", line)
 	routes, err := entities.GetRoutes(line.ID)
 	if err != nil {
 		log.Printf("error: %s", err)
@@ -159,6 +160,8 @@ func LineCtx(next http.Handler) http.Handler {
 			http.Error(w, http.StatusText(404), 404)
 			return
 		}
+		log.Printf("from %s to %s", line.From, line.To)
+
 		ctx := context.WithValue(r.Context(), "line", line)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
