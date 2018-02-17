@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/go-chi/render"
 	"github.com/sotoz/ferrytale/entities"
@@ -29,6 +30,22 @@ func NewRouteResponse(route *entities.Route) *RouteResponse {
 }
 
 func (rd *RouteResponse) Render(w http.ResponseWriter, r *http.Request) error {
+	// Pre-processing before a response is marshaled and sent across the wire
+	return nil
+}
+
+type NextDepartureResponse struct {
+	NextDepartureTime      time.Time `json:"next_departure_time"`
+	MinutesBeforeDeparture string    `json:"minutes_before_departure"`
+}
+
+func NewNextDepartureResponse(nextdep *time.Time, d time.Duration) *NextDepartureResponse {
+	resp := &NextDepartureResponse{NextDepartureTime: *nextdep, MinutesBeforeDeparture: d.String()}
+
+	return resp
+}
+
+func (rd *NextDepartureResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	// Pre-processing before a response is marshaled and sent across the wire
 	return nil
 }

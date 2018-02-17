@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"errors"
 	"time"
 
 	"github.com/sotoz/ferrytale/database"
@@ -74,4 +75,22 @@ func GetLine(lineID string) (*Line, error) {
 	)
 
 	return &line, err
+}
+
+// CalculateNextDeparture returns the time duration until the next departue
+func CalculateNextDeparture(lineID string) (*time.Time, time.Duration, error) {
+	routes, err := GetRoutes(lineID)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Routes are sorted when taken from the database. No need to sort by departure.
+	var delta time.Duration
+	for _, r := range routes {
+		delta = time.Since(r.Departure.Time) * time.Minute
+		if delta >= 0 {
+			return &r.Departure.Time, delta, nil
+		}
+	}
+	return nil, 0, errors.New("could not calculate next departure")
 }

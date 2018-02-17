@@ -101,12 +101,25 @@ func listRoutes(w http.ResponseWriter, r *http.Request) {
 	log.Print("Fetching Routes")
 
 	line := r.Context().Value("line").(*entities.Line)
-	log.Printf("111: Line %q", line)
 	routes, err := entities.GetRoutes(line.ID)
 	if err != nil {
 		log.Printf("error: %s", err)
 	}
 	if err := render.RenderList(w, r, NewRoutesListResponse(routes)); err != nil {
+		render.Render(w, r, ErrRender(err))
+		return
+	}
+}
+
+func nextDeparture(w http.ResponseWriter, r *http.Request) {
+	log.Print("Getting next departure")
+
+	line := r.Context().Value("line").(*entities.Line)
+	t, n, err := entities.CalculateNextDeparture(line.ID)
+	if err != nil {
+		log.Printf("error: %s", err)
+	}
+	if err := render.Render(w, r, NewNextDepartureResponse(t, n)); err != nil {
 		render.Render(w, r, ErrRender(err))
 		return
 	}
@@ -140,6 +153,7 @@ func Router() http.Handler {
 		r.Route("/{lineID}", func(r chi.Router) {
 			r.Use(LineCtx)
 			r.Get("/", listRoutes)
+			r.Get("/nextdeparture", nextDeparture)
 		})
 	})
 
