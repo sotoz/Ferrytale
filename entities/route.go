@@ -28,9 +28,11 @@ func GetRoutes(lineID string) ([]*Route, error) {
 		var route Route
 		err := rows.Scan(
 			&route.Day,
-			&route.Departure,
-			&route.Arrival,
+			&route.Departure.Time,
+			&route.Arrival.Time,
 		)
+		route.Departure.Valid = true
+		route.Arrival.Valid = true
 		if err != nil {
 			return nil, err
 		}
